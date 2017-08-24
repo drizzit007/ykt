@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ykt:war">
+    <output-path>$PROJECT_DIR$/../ykt/target</output-path>
+    <root id="archive" name="ykt.war">
+      <element id="artifact" artifact-name="ykt:war exploded" />
+    </root>
+  </artifact>
+</component>
