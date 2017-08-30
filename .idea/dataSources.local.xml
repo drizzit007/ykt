@@ -8,7 +8,7 @@
       </database-info>
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower" />
       <secret-storage>master_key</secret-storage>
-      <user-name>root</user-name>
+      <user-name>xycx</user-name>
       <introspection-schemas>*:knight</introspection-schemas>
     </data-source>
     <data-source name="defaultPersistenceUnit/Hibernate" uuid="8d387d95-33df-4464-97f7-f372c7731bcc">

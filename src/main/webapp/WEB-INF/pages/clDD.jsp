@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.text.SimpleDateFormat"%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -8,104 +7,128 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>班级详情</title>
+    <title>详情</title>
 
-    <link rel="stylesheet" href="//apps.bdimg.com/libs/jqueryui/1.10.4/css/jquery-ui.min.css">
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
-    <script src="//apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-
-    <script>
-        $(function() {
-            $( "#datepicker" ).datepicker({
-                changeMonth: true,
-                changeYear: true,
-                showButtonPanel: true,
-                dateFormat: "yy-mm-dd",
-                defaultDate:new Date()
-
-            });
-        });
-    </script>
-    <script>
-        function query_date() {
-            //加入未选择日期的异常处理
-            window.location="/clDD/${resultDaily.deptId}/"+document.getElementById("datepicker").value;
-        }
-
-    </script>
-
-
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
 <body>
 
-<p>日期：<input type="text" id="datepicker">
-
-
-    <input type="button" id="update" value="查询" onclick="query_date()" /></p>
 <div class="container">
-    <h2>班级详情</h2>
+    <h3>当日详情：</h3>
     <hr/>
-    <h3>${resultDaily.ctTime}</h3>
-    <hr/>
-
-    <hr>
-
     <table class="table table-bordered table-striped">
         <tr>
-            <th>班次</th>
+            <th>班级名称</th>
+        </tr>
+        <tr>
             <td>${resultDaily.deptName}</td>
         </tr>
         <tr>
-            <th>人数</th>
+            <th>统计时间</th>
+        </tr>
+        <tr>
+            <td>${resultDaily.ctTime}</td>
+        </tr>
+        <tr>
+            <th>班级总人数</th>
+        </tr>
+        <tr>
             <td>${resultDaily.peoCT}</td>
         </tr>
         <tr>
             <th>上午到课率</th>
+        </tr>
+        <tr>
             <td>${resultDaily.ctMorning}</td>
         </tr>
         <tr>
             <th>下午到课率</th>
+        </tr>
+        <tr>
             <td>${resultDaily.ctAfternoon}</td>
         </tr>
         <tr>
             <th>早餐就餐率</th>
+        </tr>
+        <tr>
             <td>${resultDaily.ctBFast}</td>
         </tr>
         <tr>
             <th>中餐就餐率</th>
+        </tr>
+        <tr>
             <td>${resultDaily.ctLunch}</td>
         </tr>
         <tr>
             <th>晚餐就餐率</th>
+        </tr>
+        <tr>
             <td>${resultDaily.ctDinner}</td>
         </tr>
         <tr>
-            <th>上午未到课学员</th>
+            <th>宿舍打卡率</th>
+        </tr>
+        <tr>
+            <td>${resultDaily.ctNight}</td>
+        </tr>
+        <tr>
+            <th>上午未到</th>
+        </tr>
+        <tr>
             <td>${resultDaily.peoMorning}</td>
         </tr>
         <tr>
-            <th>下午未到课学员</th>
+            <th>下午未到</th>
+        </tr>
+        <tr>
             <td>${resultDaily.peoAfternoon}</td>
         </tr>
         <tr>
-            <th>早餐未就餐学员</th>
+            <th>未就早餐</th>
+        </tr>
+        <tr>
             <td>${resultDaily.peoBFast}</td>
         </tr>
         <tr>
-            <th>中餐未就餐学员</th>
+            <th>未就中餐</th>
+        </tr>
+        <tr>
             <td>${resultDaily.peoLunch}</td>
         </tr>
         <tr>
-            <th>晚餐未就餐学员</th>
+            <th>未就晚餐</th>
+        </tr>
+        <tr>
             <td>${resultDaily.peoDinner}</td>
+        </tr>
+        <tr>
+            <th>晚间未打卡</th>
+        </tr>
+        <tr>
+            <td>${resultDaily.peoNight}</td>
         </tr>
 
 
     </table>
 
 
+
 </div>
 
+
+
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </body>
 </html>

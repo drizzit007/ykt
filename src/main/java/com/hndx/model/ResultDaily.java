@@ -16,12 +16,14 @@ public class ResultDaily {
     private double ctDinner;
     private double ctMorning;
     private double ctAfternoon;
+    private Double ctNight;
     private List peoInDpt;
     private List peoBFast;
     private List peoLunch;
     private List peoDinner;
     private List peoMorning;
     private List peoAfternoon;
+    private List peoNight;
      //考勤结果为0，则定为“当日不考勤”
      public  ResultDaily (Integer deptId) {
           this.deptId = deptId;
@@ -143,5 +145,21 @@ public class ResultDaily {
     }
     public void setCtAfternoon(double ctAfternoon) {
         this.ctAfternoon = ctAfternoon;
+    }
+
+    public void setCtNight(Double ctNight) {
+        this.ctNight = ctNight;
+    }
+
+    public Double getCtNight() {
+        return ctNight;
+    }
+
+    public void setPeoNight(List peoNight) {
+        this.peoNight = peoNight;
+    }
+
+    public List getPeoNight() {
+        return peoNight;
     }
 }

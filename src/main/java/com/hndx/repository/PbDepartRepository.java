@@ -16,5 +16,6 @@ public interface PbDepartRepository extends JpaRepository<PbDepartEntity, Intege
         // @Param注解用于提取参数
         public List findByStatusEqualsAndParentIdEquals(@Param("qStatus") Integer status,@Param("qParentId")  Integer parentId);
         public List readByStatusEqualsAndDepartIdEquals(@Param("qStatus") Integer status,@Param("qDptId")  int qDptId);
+        public List readByParentIdEquals(@Param("qParentId")  Integer parentId);
 
 }

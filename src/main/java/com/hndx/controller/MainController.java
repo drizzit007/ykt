@@ -38,11 +38,7 @@ public class MainController {
     @Autowired
     PbIcanteenRepository pbIcanteenRepository;
 
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public String getClas(ModelMap modelMap) {
 
-        return "test";
-    }
     @RequestMapping(value = "/{dxmoblie}", method = RequestMethod.GET)
     public String getIndex(@PathVariable("dxmoblie") String dxmoblie, ModelMap modelMap, ModelMap icmodelMap) {
         //修改为dome钉钉认证传递过来的手机号码
@@ -63,7 +59,7 @@ public class MainController {
 
 
             //用户是否有金额变动数据。最近5条。
-                Pageable pageable = new PageRequest(0, 5,Direction.DESC, "id");
+                Pageable pageable = new PageRequest(0, 8,Direction.DESC, "id");
                 Page<PbIcanteenEntity> icanteenEntityPage = pbIcanteenRepository.readBySysNoEquals(empSysNo,pageable);
                 List<PbIcanteenEntity> pbIcanteenEntityList =  icanteenEntityPage.getContent();
 

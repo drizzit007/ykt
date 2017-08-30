@@ -23,7 +23,7 @@
     <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <%
-        String datetime=new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()); //获取系统时间
+       // String datetime=new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()); //获取系统时间
 
     %>
 
@@ -45,16 +45,21 @@
     <c:if test="${!empty claList}">
         <table class="table table-bordered table-striped">
             <tr>
-                <th>班级序号</th>
-                <th>名称</th>
+
+                <th>班级</th>
+                <th>今日详情</th>
+                <th>历史详情</th>
             </tr>
 
             <c:forEach items="${claList}" var="cla">
                 <tr>
-                    <td>${cla.departId}</td>
+
                     <td>${cla.name}</td>
                     <td>
-                        <a href="/clDD/${cla.departId}/<%=datetime %>" type="button" class="btn btn-sm btn-success">今日详情</a>
+                        <a href="/ykt/clDD/${cla.departId}" type="button" class="btn btn-sm btn-success">现状查询</a>
+                    </td>
+                    <td>
+                        <a href="/ykt/showHts/${cla.departId}" type="button" class="btn btn-sm btn-success">历史记录</a>
                     </td>
                 </tr>
             </c:forEach>

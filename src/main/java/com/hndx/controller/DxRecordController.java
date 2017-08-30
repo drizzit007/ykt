@@ -1,96 +1,116 @@
 package com.hndx.controller;
+
 import com.hndx.model.*;
 import com.hndx.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
+
 import java.util.List;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 @Controller
-public class ResultDailyContrller {
-
+public class DxRecordController {
     @Autowired
-    PbDepartRepository  pbDepartRepository;
+    PbDepartRepository pbDepartRepository;
     @Autowired
     KqCardRecordRepository kqCardRecordRepository;
     @Autowired
     PbIcanteenRepository pbIcanteenRepository;
     @Autowired
     PbEmplyRepository pbEmplyRepository;
+    @Autowired
+    DxRecordRepository dxRecordRepository;
 
-
-
-    @RequestMapping(value = "/class", method = RequestMethod.GET)
-    public String getClas(ModelMap modelMap) {
-        List<PbDepartEntity> claList = pbDepartRepository.findByStatusEqualsAndParentIdEquals(0,8);
+    @RequestMapping(value = "/classAll", method = RequestMethod.GET)
+    public String getClasAll(ModelMap modelMap) {
+        List<PbDepartEntity> claList = pbDepartRepository.readByParentIdEquals(8);
         modelMap.addAttribute("claList", claList);
-        return "clas";
+        return "classAll";
     }
 
-    @RequestMapping(value = "/clDD/{dptid}", method = RequestMethod.GET)
-    public String getclDD(@PathVariable("dptid") Integer dptid,ModelMap modelMap) {
-        ResultDaily resultDaily=new ResultDaily(dptid);
+
+    @RequestMapping(value = "/showHts/{dptid}",method = RequestMethod.GET)
+    public String showHst(@PathVariable("dptid") Integer dptid,ModelMap modelMap){
+        Pageable pageable = new PageRequest(0, 30, Sort.Direction.DESC, "clDdid");
+        Page<DxRecordEntity> dxRecordEntityPage = dxRecordRepository.readByDeptIdEquals(dptid,pageable);
+        List<DxRecordEntity> dxRecordEntityList=dxRecordEntityPage.getContent();
+
+        modelMap.addAttribute("dxRecordEntityList", dxRecordEntityList);
+
+        return "showHts";  //一个 showHts.jsp
+    }
+
+    @RequestMapping(value = "/showHtsP/{clDDID}",method = RequestMethod.GET)
+    public String showHstP(@PathVariable("clDDID") Integer clDDID,ModelMap modelMap){
+        List<DxRecordEntity> dxRecordEntityList = dxRecordRepository.readFirstByClDdidEquals(clDDID);
+        DxRecordEntity dxRecordEntity=dxRecordEntityList.iterator().next();
+        modelMap.addAttribute("dxRecord", dxRecordEntity);
+
+        return "showHtsP";  //一个 showHts.jsp
+    }
+
+//下面的手动程序，k可以删除，用以保存某班某天的记录
+
+    @RequestMapping(value = "/addRrd/{dptid}/{mqDay}", method = RequestMethod.GET)
+    public String getclDD(@PathVariable("dptid") Integer dptid, @PathVariable("mqDay") String mqDay, ModelMap modelMap) {
+        DxRecordEntity dxRecordEntity=new DxRecordEntity();
+        dxRecordEntity.setDeptId(dptid);
         List<PbDepartEntity> dptList=pbDepartRepository.readByStatusEqualsAndDepartIdEquals(0,dptid);
-        resultDaily.setDeptName(dptList.iterator().next().getName());
-        //获得日期
-        //待用！ 引用传递的model数据。  public String addUserPost(@ModelAttribute("user") UserEntity userEntity)
-        //String datestr = "2017-08-10 00:00:00.123";
-        //Timestamp qts = Timestamp.valueOf(datestr);
-
-        //resultDaily.setCtTime(qts);
-
-        //改进，班级全体成员形成一个LIST或者iterator，用于计算人数，比对就餐人员，比对考勤人员（考勤比较复杂，就怕一个周期多次刷卡），
-        //再列出未就餐和到课人员。
-        //后期，在晚上11点，将所有班次本日记录保存到本地服务器（因为不会发生变更了）
+        dxRecordEntity.setDeptName(dptList.iterator().next().getName());
 
         //班级人数
         List<PbEmplyEntity> emplyEntityList=pbEmplyRepository.readByDepartIdEqualsAndIsDeleteEquals(dptid,0);
         Integer stuCT =emplyEntityList.size();
-        resultDaily.setPeoCT(stuCT);
+        dxRecordEntity.setPeoCt(stuCT);
         //日期处理：得到今日
         //Calendar calendar = Calendar.getInstance();
         //Date now=calendar.getTime();
-        String qTime=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+       // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String tDay=mqDay;
+
+
+
+        String qTime=tDay+" 20:00:01";
         Timestamp qts = Timestamp.valueOf(qTime);
-        resultDaily.setCtTime(qts);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String tDay=sdf.format(Calendar.getInstance().getTime());
 
+       // SimpleDateFormat sdf2 = new SimpleDateFormat("YYMMDD");
+        //String clD=sdf2.format(qts)+dptid;  //
+       // int clDid=Integer.parseInt (clD);
 
         //统计数据初始化
-        List<String> noMor=new ArrayList<String>();
+        String noMor="";
         Integer ctMor=0;
-        List<String> noAfter=new ArrayList<String>();
+        String noAfter="";
         Integer ctAfter=0;
-        List<String> noNight=new ArrayList<String>();
-        Integer ctNight=0;
+        String noNight = "";
+        Integer ctNight = 0;
 
-        List<String> noBF=new ArrayList<String>();
+        String noBF="";
         Integer ctBF=0;
-        List<String> noLun=new ArrayList<String>();
+        String noLun="";
         Integer ctLun=0;
-        List<String> noDin=new ArrayList<String>();
+        String noDin="";
         Integer ctDin=0;
 
 
         //进行统计
         if (emplyEntityList.isEmpty())//判断班上是否有成员
-        {return "clas";}
+        {return "classAll";}
         else {
             //遍历每一位成员
             for (PbEmplyEntity emplyEntity:emplyEntityList
-             ) {
+                    ) {
                 //得到班级成员的编号
                 Integer sysNo=emplyEntity.getSysNo();
                 String emName=emplyEntity.getEmployeeName();
@@ -103,9 +123,9 @@ public class ResultDailyContrller {
                 List<KqCardRecordEntity> kqCardRecordEntityList=kqCardRecordRepository.readFirstByCardTimeBetweenAndSysNoEquals(qbmts,qemts,sysNo);
                 if (kqCardRecordEntityList.isEmpty()){
                     //这是测试语句
-                    //resultDaily.setCtMorning(0.08);
+                   // dxRecordEntity.setCtMorning(0.08);
                     //如果没有添加到未上课或迟到名单
-                    noMor.add(emName);
+                    noMor=noMor+emName+",";
                 }
                 else {
                     //如果有计数器加1
@@ -119,7 +139,7 @@ public class ResultDailyContrller {
                 List<KqCardRecordEntity> akqCardRecordEntityList=kqCardRecordRepository.readFirstByCardTimeBetweenAndSysNoEquals(qbats,qeats,sysNo);
                 if (akqCardRecordEntityList.isEmpty()){
                     //添加到未上课或迟到名单
-                    noAfter.add(emName);
+                    noAfter=noAfter+emName+",";
                 }
                 else {
                     ctAfter=ctAfter+1;
@@ -132,7 +152,7 @@ public class ResultDailyContrller {
                 List<KqCardRecordEntity> nkqCardRecordEntityList = kqCardRecordRepository.readFirstByCardTimeBetweenAndSysNoEquals(qbnts, qents, sysNo);
                 if (nkqCardRecordEntityList.isEmpty()) {
                     //添加到未上课或迟到名单
-                    noNight.add(emName);
+                    noNight = noNight + emName + ",";
                 } else {
                     ctNight = ctNight + 1;
                 }
@@ -148,7 +168,7 @@ public class ResultDailyContrller {
                 List<PbIcanteenEntity> pbIcanteenEntityList1=pbIcanteenRepository.readFirstByDealDateIsBetweenAndSysNoEqualsAndMealTypeEquals(qicanbmts,qicanemts,sysNo,qmType);
                 if (pbIcanteenEntityList1.isEmpty()){
                     //添加到未上课或迟到名单
-                    noBF.add(emName);
+                    noBF=noBF+emName+",";
                 }
                 else {
                     ctBF=ctBF+1;
@@ -158,7 +178,7 @@ public class ResultDailyContrller {
                 List<PbIcanteenEntity> pbIcanteenEntityList2=pbIcanteenRepository.readFirstByDealDateIsBetweenAndSysNoEqualsAndMealTypeEquals(qicanbmts,qicanemts,sysNo,qmType);
                 if (pbIcanteenEntityList2.isEmpty()){
                     //添加到未上课或迟到名单
-                    noLun.add(emName);
+                    noLun=noLun+emName+",";
                 }
                 else {
                     ctLun=ctLun+1;
@@ -168,7 +188,7 @@ public class ResultDailyContrller {
                 List<PbIcanteenEntity> pbIcanteenEntityList3=pbIcanteenRepository.readFirstByDealDateIsBetweenAndSysNoEqualsAndMealTypeEquals(qicanbmts,qicanemts,sysNo,qmType);
                 if (pbIcanteenEntityList3.isEmpty()){
                     //添加到未上课或迟到名单
-                    noDin.add(emName);
+                    noDin=noDin+emName+",";
                 }
                 else {
                     ctDin=ctDin+1;
@@ -204,35 +224,35 @@ public class ResultDailyContrller {
         jcDin = b5.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
 
+       // dxRecordEntity.setClDdid(clDid);
+        dxRecordEntity.setCtTime(qts);
+        dxRecordEntity.setCtMorning(kqMor);
+        dxRecordEntity.setPeoMorning(noMor);
+        dxRecordEntity.setCtAfternoon(kqAft);
+        dxRecordEntity.setPeoAfternoon(noAfter);
+        dxRecordEntity.setCtBFast(jcBF);
+        dxRecordEntity.setPeoBFast(noBF);
+        dxRecordEntity.setCtLunch(jcLun);
+        dxRecordEntity.setPeoLunch(noLun);
+        dxRecordEntity.setCtDinner(jcDin);
+        dxRecordEntity.setPeoDinner(noDin);
+        dxRecordEntity.setCtNight(kqNight);
+        dxRecordEntity.setPeoNight(noNight);
 
-        resultDaily.setCtMorning(kqMor);
-        resultDaily.setPeoMorning(noMor);
-        resultDaily.setCtAfternoon(kqAft);
-        resultDaily.setPeoAfternoon(noAfter);
-        resultDaily.setCtBFast(jcBF);
-        resultDaily.setPeoBFast(noBF);
-        resultDaily.setCtLunch(jcLun);
-        resultDaily.setPeoLunch(noLun);
-        resultDaily.setCtDinner(jcDin);
-        resultDaily.setPeoDinner(noDin);
-        resultDaily.setCtNight(kqNight);
-        resultDaily.setPeoNight(noNight);
-
-        //早中晚餐，可以餐别 for 1-2-3 之类来实现
-
-
-
+        dxRecordRepository.saveAndFlush(dxRecordEntity);
 
 
 
-
-
-
-
-
-        modelMap.addAttribute("resultDaily", resultDaily);
-        return "clDD";
+        return "classAll";
     }
 
 
+
+
 }
+
+
+
+
+
+
